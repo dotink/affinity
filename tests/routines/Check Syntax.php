@@ -1,6 +1,5 @@
 <?php namespace Dotink\Lab
 {
-
 	use RecursiveDirectoryIterator;
 	use RecursiveIteratorIterator;
 	use RegexIterator;

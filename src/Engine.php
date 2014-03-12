@@ -90,7 +90,7 @@
 		/**
 		 *
 		 */
-		public function run($environment)
+		public function start($environment)
 		{
 			$this->context = array_slice(func_get_args(), 1);
 
@@ -108,17 +108,19 @@
 			});
 
 			foreach ($this->actions as $key => $action) {
-				$unsettled = array_diff($this->settled, $action->getDependencies());
+				$unsettled = array_diff($action->getDependencies(), $this->settled);
 
 				if (count($unsettled)) {
 					throw new Flourish\ProgrammerException (
-						'Unsettled dependencies %s for action %s',
+						'Unsettled dependencies %s on action %s, this may indicate co-dependency',
 						implode(', ', $unsettled),
 						$key
 					);
 				}
 
 				call_user_func_array($action->getOperation(), $this->context);
+
+				$this->settled[] = $key;
 			}
 		}
 	}
