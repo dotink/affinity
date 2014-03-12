@@ -70,6 +70,13 @@
 				}
 
 			} else {
+				if (!isset($this->configs[$id])) {
+					throw new Flourish\ProgrammerException(
+						'Cannot fetch from invalid configuration %s',
+						$id
+					);
+				}
+
 				$result = $this->configs[$id]->getData();
 
 				foreach(explode('.', $param) as $key) {
