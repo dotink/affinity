@@ -13,8 +13,8 @@
 		static public function create($types, $data = NULL)
 		{
 			if (func_num_args() == 1) {
-				$types    = [];
-				$resource = func_get_arg(0);
+				$types = [];
+				$data  = func_get_arg(0);
 			}
 
 			return new static($types, $data);
