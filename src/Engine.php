@@ -57,6 +57,15 @@
 		/**
 		 *
 		 */
+		public function exec($callback)
+		{
+			return call_user_func_array($callback, $this->context);
+		}
+
+
+		/**
+		 *
+		 */
 		public function fetch($id, $param, $default = NULL)
 		{
 			if ($id[0] === '@') {
@@ -125,7 +134,7 @@
 					);
 				}
 
-				call_user_func_array($action->getOperation(), $this->context);
+				$this->exec($action->getOperation());
 
 				$this->settled[] = $key;
 			}
