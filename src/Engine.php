@@ -66,15 +66,22 @@
 		/**
 		 *
 		 */
-		public function fetch($id, $param, $default = NULL)
+		public function fetch($id, $param = NULL, $default = NULL)
 		{
 			if ($id[0] === '@') {
 				$result = array();
 				$type   = substr($id, 1);
 
-				foreach ($this->configs as $key => $config) {
-					if (in_array($type, $config->getTypes())) {
-						$result[$key] = $this->fetch($key, $id . '.' . $param, $default);
+				if ($param === NULL) {
+					foreach ($this->configs as $key => $config) {
+						$result[] = $key;
+					}
+
+				} else {
+					foreach ($this->configs as $key => $config) {
+						if (in_array($type, $config->getTypes())) {
+							$result[$key] = $this->fetch($key, $id . '.' . $param, $default);
+						}
 					}
 				}
 
@@ -88,13 +95,15 @@
 
 				$result = $this->configs[$id]->getData();
 
-				foreach(explode('.', $param) as $key) {
-					if (isset($result[$key])) {
-						$result = $result[$key];
+				if ($param !== NULL) {
+					foreach(explode('.', $param) as $key) {
+						if (isset($result[$key])) {
+							$result = $result[$key];
 
-					} else {
-						$result = $default;
-						break;
+						} else {
+							$result = $default;
+							break;
+						}
 					}
 				}
 			}
