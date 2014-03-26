@@ -74,7 +74,9 @@
 
 				if ($param === NULL) {
 					foreach ($this->configs as $key => $config) {
-						$result[] = $key;
+						if (in_array($type, $config->getTypes())) {
+							$result[] = $key;
+						}
 					}
 
 				} else {
@@ -141,7 +143,7 @@
 			});
 
 			foreach (array_keys($dependency_map) as $key) {
-				$unsettled = array_diff($this->actions[$key]->getDependencies(), $this->settled);
+				$unsettled = array_diff($dependency_map[$key], $this->settled);
 
 				if (count($unsettled)) {
 					throw new Flourish\ProgrammerException (
@@ -151,7 +153,7 @@
 					);
 				}
 
-				$this->exec($action->getOperation());
+				$this->exec($this->actions[$key]->getOperation());
 
 				$this->settled[] = $key;
 			}
