@@ -122,18 +122,26 @@
 			$this->drivers['config']->load($this, $environment);
 			$this->drivers['action']->load($this, $environment);
 
-			uksort($this->actions, function($a, $b) {
-				if (in_array($a, $this->actions[$b]->getDependencies())) {
-					return -1;
-				} elseif (in_array($b, $this->actions[$a]->getDependencies())) {
-					return 1;
-				}
-
-				return 0;
-			});
+			$dependency_map = array();
 
 			foreach ($this->actions as $key => $action) {
-				$unsettled = array_diff($action->getDependencies(), $this->settled);
+				$dependency_map[$key] = array();
+
+				foreach ($action->getDependencies() as $sub_key) {
+					$dependency_map = $this->mapChildDependencies($key, $sub_key, $dependency_map);
+				}
+			}
+
+			uksort($dependency_map, function($a, $b) use ($dependency_map) {
+				if (in_array($a, $dependency_map[$b])) {
+					return -1;
+				}
+
+				return 1;
+			});
+
+			foreach (array_keys($dependency_map) as $key) {
+				$unsettled = array_diff($this->actions[$key]->getDependencies(), $this->settled);
 
 				if (count($unsettled)) {
 					throw new Flourish\ProgrammerException (
@@ -147,6 +155,23 @@
 
 				$this->settled[] = $key;
 			}
+		}
+
+
+		/**
+		 *
+		 */
+		private function mapChildDependencies($key, $sub_key, $map) {
+			$map[$key][] = $sub_key;
+			$sub_keys    = $this->actions[$sub_key]->getDependencies();
+
+			if ($new_keys = array_diff($sub_keys, $map[$key])) {
+				foreach ($new_keys as $new_key) {
+					$map = $this->mapChildDependencies($key, $new_key, $map);
+				}
+			}
+
+			return $map;
 		}
 	}
 }
