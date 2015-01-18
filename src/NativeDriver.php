@@ -56,14 +56,17 @@
 			$sub_directories = glob($directory . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
 
 			foreach ($target_files as $target_file) {
-				$res = include $target_file;
-				$key = str_replace($base, '', $target_file);
-				$key = pathinfo($key, PATHINFO_FILENAME);
+				$result   = include $target_file;
+				$key_path = sprintf(
+					'%s' . DIRECTORY_SEPARATOR . '%s',
+					str_replace($base, '', $directory),
+					pathinfo($target_file, PATHINFO_FILENAME)
+				);
 
-				if ($res instanceof ConfigInterface) {
-					$this->engine->addConfig($key, $res);
-				} elseif ($res instanceof ActionInterface) {
-					$this->engine->addAction($key, $res);
+				if ($result instanceof ConfigInterface) {
+					$this->engine->addConfig(trim($key_path, DIRECTORY_SEPARATOR), $result);
+				} elseif ($result instanceof ActionInterface) {
+					$this->engine->addAction(trim($key_path, DIRECTORY_SEPARATOR), $result);
 				} else {
 					throw new Flourish\ProgrammerException(
 						'Invalid affinity result loaded from %s',
