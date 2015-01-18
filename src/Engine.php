@@ -139,7 +139,19 @@
 					return -1;
 				}
 
-				return 1;
+				if (in_array($b, $dependency_map[$a])) {
+					return 1;
+				}
+
+				if (array_diff($dependency_map[$b], $dependency_map[$a])) {
+					return -1;
+				}
+
+				if (array_diff($dependency_map[$a], $dependency_map[$b])) {
+					return 1;
+				}
+
+				return 0;
 			});
 
 			foreach (array_keys($dependency_map) as $key) {
