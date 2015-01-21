@@ -2,7 +2,7 @@
 	"name": "dotink/affinity",
 	"description": "A bootstrapper that loves you",
 	"keywords": ["bootstrap"],
-	"license": "AGPL 3.0",
+	"license": "AGPL-3.0",
 	"authors": [
 		{
 			"name": "Matthew J. Sahagian",
