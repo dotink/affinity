@@ -143,12 +143,15 @@
 					return 1;
 				}
 
-				if (array_diff($dependency_map[$b], $dependency_map[$a])) {
-					return -1;
+				$diff_a = array_diff($dependency_map[$b], $dependency_map[$a]);
+				$diff_b = array_diff($dependency_map[$a], $dependency_map[$b]);
+
+				if (count($diff_b) > count($diff_a)) {
+					return 1;
 				}
 
-				if (array_diff($dependency_map[$a], $dependency_map[$b])) {
-					return 1;
+				if (count($diff_a) > count($diff_b)) {
+					return -1;
 				}
 
 				return 0;
