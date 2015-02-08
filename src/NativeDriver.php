@@ -34,9 +34,10 @@
 		/**
 		 *
 		 */
-		public function load($engine, $environment)
+		public function load($engine, $environment, $context)
 		{
-			$this->engine = $engine;
+			$this->engine  = $engine;
+			$this->context = $context;
 
 			if ($environment != 'default') {
 				$this->scanDirectory($this->directory . DIRECTORY_SEPARATOR . 'default');
@@ -56,7 +57,7 @@
 			$sub_directories = glob($directory . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
 
 			foreach ($target_files as $target_file) {
-				$result   = include $target_file;
+				$result   = $this->retrieve($target_file);
 				$key_path = sprintf(
 					'%s' . DIRECTORY_SEPARATOR . '%s',
 					str_replace($base, '', $directory),
@@ -78,6 +79,17 @@
 			foreach ($sub_directories as $sub_directory) {
 				$this->scanDirectory($sub_directory, $base);
 			}
+		}
+		
+		
+		/**
+		 *
+		 */
+		protected function retrieve($target_file)
+		{
+			extract($this->context, EXTR_SKIP);
+			
+			return include $target_file;			
 		}
 	}
 }

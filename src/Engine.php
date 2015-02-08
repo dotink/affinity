@@ -117,12 +117,12 @@
 		/**
 		 *
 		 */
-		public function start($environment)
+		public function start($environment, $context)
 		{
-			$this->context = array_slice(func_get_args(), 1);
+			$this->context = $context;
 
-			$this->drivers['config']->load($this, $environment);
-			$this->drivers['action']->load($this, $environment);
+			$this->drivers['config']->load($this, $environment, $context);
+			$this->drivers['action']->load($this, $environment, $context);
 
 			$dependency_map = array();
 
