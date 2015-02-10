@@ -26,11 +26,11 @@
 			 */
 			'Complete test with sample data' => function($data, $shared)
 			{
-				$config_driver = new Affinity\NativeDriver($data['root'] . '/tests/sample/config');
-				$action_driver = new Affinity\NativeDriver($data['root'] . '/tests/sample/include');
+				$config_driver = new Affinity\NativeDriver($data['root'] . '/test/sample/config');
+				$action_driver = new Affinity\NativeDriver($data['root'] . '/test/sample/include');
 
 				$engine = new Affinity\Engine($config_driver, $action_driver);
-				$engine->start('dev', $engine);
+				$engine->start('dev', ['engine' => $engine]);
 
 				assert($engine->fetch('core',  'foo'))->equals('too');
 				assert($engine->fetch('@test', 'foo'))->equals(['core' => 'bar']);
