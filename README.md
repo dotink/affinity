@@ -72,7 +72,7 @@ a file such as `include/default/routes/main.php` is identified by
 
 ## Configurations
 
-You can create a configuring by returning it from any PHP file located in
+You can create a configuration by returning it from any PHP file located in
 an environment directory.  For example, let's imagine adding the following
 to `config/default/test.php`:
 
@@ -176,6 +176,20 @@ Add a file to the appropriate environment and return
 
 ```php
 return Affinity\Action::create(function($app, $di) {
+	//
+	// Your bootstrap logic here
+	//
+});
+```
+
+### Action Ordering (Dependencies)
+
+If you need to make sure your actions run in order, you can add an array of
+dependencies as an optional first argument.  The below action will not run
+until the action identified by the `core` ID has run:
+
+```php
+return Affinity\Action::create(['core'], function($app, $di) {
 	//
 	// Your bootstrap logic here
 	//
