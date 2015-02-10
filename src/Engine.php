@@ -3,33 +3,83 @@
 	use Dotink\Flourish;
 
 	/**
+	 * The engine is responsible for executing all bootstrap logic and providing access to configs
 	 *
+	 * @copyright Copyright (c) 2015, Matthew J. Sahagian
+	 * @author Matthew J. Sahagian [mjs] <msahagian@dotink.org>
+	 *
+	 * @license Please reference the LICENSE.md file at the root of this distribution
+	 *
+	 * @package Affinity
 	 */
 	class Engine
 	{
+		/**
+		 * The actions registered for the engine
+		 *
+		 * @access private
+		 * @var array
+		 */
 		private $actions = array();
 
+
+		/**
+		 * The configs registered for the engine
+		 *
+		 * @access private
+		 * @var array
+		 */
 		private $configs = array();
 
+
+		/**
+		 * The context registered for the engine
+		 *
+		 * @access private
+		 * @var array
+		 */
 		private $context = array();
 
+
+		/**
+		 * The drivers registered for the engine
+		 *
+		 * @access private
+		 * @var array
+		 */
 		private $drivers = array();
 
+
+		/**
+		 * Dependencies which have already been settled
+		 *
+		 * @access private
+		 * @var array
+		 */
 		private $settled = array();
 
 
 		/**
+		 * Create a new engine with any number of drivers
 		 *
+		 * @access public
+		 * @param DriverInterface $driver A driver for loading actions / configs
+		 * @param ...
+		 * @return void
 		 */
-		public function __construct($config_driver, $action_driver)
+		public function __construct($drivers)
 		{
-			$this->drivers['config'] = $config_driver;
-			$this->drivers['action'] = $action_driver;
+			$this->drivers = func_get_args();
 		}
 
 
 		/**
+		 * Add an action to the engine under a specific key ID
 		 *
+		 * @access public
+		 * @param string $key The specific key ID
+		 * @param ActionInterface $action The action to add
+		 * @return void
 		 */
 		public function addAction($key, ActionInterface $action)
 		{
@@ -42,7 +92,12 @@
 
 
 		/**
+		 * Add a config to the engine under a specific key ID
 		 *
+		 * @access public
+		 * @param string $key The specific key ID
+		 * @param ConfigInterface $config The config to add
+		 * @return void
 		 */
 		public function addConfig($key, ConfigInterface $config)
 		{
@@ -55,16 +110,35 @@
 
 
 		/**
+		 * Execute a provide action operation
 		 *
+		 * @access public
+		 * @param callable $callback The callback for the operation
+		 * @return mixed The result of the operation
 		 */
-		public function exec($callback)
+		public function exec(callable $callback)
 		{
 			return call_user_func_array($callback, $this->context);
 		}
 
 
 		/**
+		 * Fetch a specific key ID or aggregate ID's configuration values
 		 *
+		 * The param can be a string formatted as a JS object (example.property) which will
+		 * resolve subparameters.  If a default is provided that will be returned if the value
+		 * does not exist, NULL will be returned otherwise.
+		 *
+		 * In the case of aggregate IDs, the returned value will be an array.  If no parameter
+		 * is specified the array will contain the specific key IDs for configs which contain
+		 * the aggregate type.  Otherwise, the data will be the value of the array and the key
+		 * will be the specific ID.
+		 *
+		 * @access public
+		 * @param string $id The config ID to fetch, aggregate IDs are preceded with `@`
+		 * @param string $param The param to fetch, can be JS style object notation
+		 * @param mixed $default The default value if not found, `NULL` is the default default
+		 * @return mixed The resolved configuration value
 		 */
 		public function fetch($id, $param = NULL, $default = NULL)
 		{
@@ -115,15 +189,27 @@
 
 
 		/**
+		 * Start the engine for given environments and context
 		 *
+		 * @access public
+		 * @param string $environments A comma separated list of non-default environments to load
+		 * @param array $context The context to provide drivers and pass to operations
+		 * @return void
 		 */
-		public function start($environment, $context)
+		public function start($environments, array $context)
 		{
-			$this->context = $context;
+			foreach ($this->drivers as $driver) {
+				if (!($driver instanceof DriverInterface)) {
+					throw new Flourish\ProgrammerException(
+						'Invalid driver "%s" passed to engine, does not implement DriverInterface',
+						print_r($driver, TRUE)
+					);
+				}
 
-			$this->drivers['config']->load($this, $environment, $context);
-			$this->drivers['action']->load($this, $environment, $context);
+				$driver->load($this, array_map('trim', explode(',', $environments)), $context);
+			}
 
+			$this->context  = $context;
 			$dependency_map = array();
 
 			foreach ($this->actions as $key => $action) {
@@ -176,7 +262,13 @@
 
 
 		/**
+		 * Map all child dependencies for a given action key
 		 *
+		 * @access private
+		 * @param string $key The key for the action whose dependencies we're mapping
+		 * @param string $sub_key The child key we're mapping
+		 * @param array $map The original dependency map
+		 * @return array The new dependency map with child dependencies expanded
 		 */
 		private function mapChildDependencies($key, $sub_key, $map) {
 			$map[$key][] = $sub_key;
