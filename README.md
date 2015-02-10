@@ -8,6 +8,12 @@ functionality without additional work.
 It provides mechanisms for running bootstrap operations and logic as well as
 creating and accessing well organized configuration data.
 
+Affinity is a key component of the inKWell framework, you can read more
+about the integration of it at:
+
+http://inkwell.dotink.org/docs/basics/02-nano-core#Bootstrapping
+
+Or... continue reading below for standalone use.
 
 ## Basic Usage
 
