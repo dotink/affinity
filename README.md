@@ -35,6 +35,7 @@ then call `start()` in order to execute bootstrapping.
 The native driver assumes that your configuration and action directory
 structure looks like the following:
 
+```
 --- config_root [this is what you pass to the __construct() call]
  |
  |- default
@@ -44,7 +45,7 @@ structure looks like the following:
  |- environment2
  |
  |- ...
-
+```
 
 All configs and actions from `default` will be included no matter what and
 will be extended based on the environment provided to the `start()` call.
