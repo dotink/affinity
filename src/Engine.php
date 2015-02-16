@@ -169,16 +169,25 @@
 					);
 				}
 
-				$result = $this->configs[$id]->getData();
+				if (is_array($param)) {
+					$result = array();
 
-				if ($param !== NULL) {
-					foreach(explode('.', $param) as $key) {
-						if (isset($result[$key])) {
-							$result = $result[$key];
+					foreach ($param as $option => $default) {
+						$result[$option] = $this->fetch($id, $option, $default);
+					}
 
-						} else {
-							$result = $default;
-							break;
+				} else {
+					$result = $this->configs[$id]->getData();
+
+					if ($param !== NULL) {
+						foreach(explode('.', $param) as $key) {
+							if (isset($result[$key])) {
+								$result = $result[$key];
+
+							} else {
+								$result = $default;
+								break;
+							}
 						}
 					}
 				}
