@@ -280,12 +280,14 @@
 		 * @return array The new dependency map with child dependencies expanded
 		 */
 		private function mapChildDependencies($key, $sub_key, $map) {
-			$map[$key][] = $sub_key;
-			$sub_keys    = $this->actions[$sub_key]->getDependencies();
+			if (isset($this->actions[$sub_key])) {
+				$map[$key][] = $sub_key;
+				$sub_keys    = $this->actions[$sub_key]->getDependencies();
 
-			if ($new_keys = array_diff($sub_keys, $map[$key])) {
-				foreach ($new_keys as $new_key) {
-					$map = $this->mapChildDependencies($key, $new_key, $map);
+				if ($new_keys = array_diff($sub_keys, $map[$key])) {
+					foreach ($new_keys as $new_key) {
+						$map = $this->mapChildDependencies($key, $new_key, $map);
+					}
 				}
 			}
 
