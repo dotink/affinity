@@ -1,6 +1,8 @@
 <?php namespace Affinity
 {
+	use Closure;
 	use Dotink\Flourish;
+
 
 	/**
 	 * The engine is responsible for executing all bootstrap logic and providing access to configs
@@ -118,7 +120,9 @@
 		 */
 		public function exec(callable $callback)
 		{
-			return call_user_func_array($callback, $this->context);
+			return $callback instanceof Closure
+				? call_user_func_array(Closure::bind($callback, $this), $this->context)
+				: call_user_func_array($callback, $this->context);
 		}
 
 
