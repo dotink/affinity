@@ -42,8 +42,8 @@
 		static public function create($dependencies, callable $operation = NULL)
 		{
 			if (func_num_args() == 1) {
-				$dependencies = array();
 				$operation    = func_get_arg(0);
+				$dependencies = array();
 			}
 
 			settype($dependencies, 'array');

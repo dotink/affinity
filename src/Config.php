@@ -42,8 +42,8 @@
 		static public function create($types, array $data = NULL)
 		{
 			if (func_num_args() == 1) {
-				$types = array();
 				$data  = func_get_arg(0);
+				$types = array();
 			}
 
 			settype($types, 'array');
