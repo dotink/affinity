@@ -1,5 +1,6 @@
 <?php namespace Affinity
 {
+	use Closure;
 	use Dotink\Flourish;
 
 	/**
@@ -123,7 +124,9 @@
 		{
 			extract($this->context, EXTR_SKIP);
 
-			return include $target_file;
+			return Closure::bind(function($target_file) {
+				return include $target_file;
+			}, $this->engine)($target_file);
 		}
 	}
 }
