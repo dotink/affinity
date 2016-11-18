@@ -124,9 +124,9 @@
 		{
 			extract($this->context, EXTR_SKIP);
 
-			return Closure::bind(function($target_file) {
+			return call_user_func(Closure::bind(function($target_file) {
 				return include $target_file;
-			}, $this->engine)($target_file);
+			}, $this->engine), $target_file);
 		}
 	}
 }
